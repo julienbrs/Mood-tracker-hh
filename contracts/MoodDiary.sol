@@ -17,19 +17,18 @@ contract MoodDiary {
     mapping(address => Mood[]) public addressToMoods;
 
     // Function to set a user's current mood
-    function setMood(bytes memory _mood) public {
+    function setMood(string memory _mood) public {
+        // Convert string to bytes to check length
+        bytes memory moodBytes = bytes(_mood);
         // Validate the mood string
-        require(_mood.length > 0, "Mood cannot be empty");
-        require(_mood.length <= MAX_MOOD_LENGTH, "Mood is too long");
+        require(moodBytes.length > 0, "Mood cannot be empty");
+        require(moodBytes.length <= MAX_MOOD_LENGTH, "Mood is too long");
 
         // Get the user's address
         address user = msg.sender;
 
-        // Convert the bytes to a string
-        string memory moodString = string(_mood);
-
         // Create a new Mood struct with the current timestamp and the provided mood string
-        Mood memory mood = Mood(block.timestamp, moodString);
+        Mood memory mood = Mood(block.timestamp, _mood);
 
         // Add the new Mood struct to the user's array of moods
         addressToMoods[user].push(mood);

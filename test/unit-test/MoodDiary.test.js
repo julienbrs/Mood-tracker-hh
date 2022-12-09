@@ -22,8 +22,43 @@ const { developmentChains, networkConfig } = require("../../helper-hardhat-confi
 
           describe("setMood", function () {
               it("should set the user's mood to the provided mood string", async () => {
-                  // Set the user's mood to "happy", but we need to convert to bytes !
-                  await moodDiary.setMood(web3.utils.toHex("happy"))
+                  // Set the user's mood to "happy"
+                  await moodDiary.setMood("happy")
+                  // Get the user's most recent mood
+                  const mostRecentMood = await moodDiary.getMostRecentMood()
+
+                  // Expect the most recent mood to be "happy"
+                  expect(mostRecentMood.mood).to.equal("happy")
+              })
+
+              it("should not allow empty mood strings", async () => {
+                  // Try to set the user's mood to an empty string
+                  try {
+                      await moodDiary.setMood("")
+                  } catch (error) {
+                      // Expect the transaction to fail
+                      expect(error.message).to.contain("Mood cannot be empty")
+                  }
+              })
+
+              it("should not allow mood strings longer than the maximum length", async () => {
+                  // Try to set the user's mood to a string that is too long
+                  try {
+                      const longMood = "a".repeat(101)
+                      await moodDiary.setMood(longMood)
+                  } catch (error) {
+                      // Expect the transaction to fail
+                      expect(error.message).to.contain("Mood is too long")
+                  }
+              })
+          })
+
+          // Test the getMostRecentMood function
+          describe("getMostRecentMood", () => {
+              it("should return the user's most recent mood", async () => {
+                  // Set the user's mood to "happy"
+                  await moodDiary.setMood("happy")
+
                   // Get the user's most recent mood
                   const mostRecentMood = await moodDiary.getMostRecentMood()
 
